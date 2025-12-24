@@ -1,0 +1,11 @@
+.env
+venv/
+__pycache__/
+*.log
+.pytest_cache/
+.DS_Store
+.ipynb_checkpoints/
+classified_planning_tickets.csv
+logs/
+day1_slack_alert/logs/
+day30_ticket_classifier/logs/

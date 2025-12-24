@@ -1,0 +1,11 @@
+ticket_id,customer,issue_description,created_at,status
+TKT-001,Acme Corp,"Our payment failed and we need urgent help to process the invoice immediately",2023-05-28T10:15:30,Open
+TKT-002,TechStart Inc,"The dashboard is showing error 500 and our team cannot access critical data",2023-05-28T11:22:45,Open
+TKT-003,Global Solutions,"Very disappointed with the service quality, this is terrible customer support",2023-05-28T12:30:15,Open
+TKT-004,StartupXYZ,"How do I change my password and update my profile information?",2023-05-28T13:45:20,Open
+TKT-005,Enterprise Co,"System crashed during peak hours causing major downtime for our operations",2023-05-28T14:10:05,Open
+TKT-006,Innovation Labs,"We were charged twice for the same service, please refund immediately",2023-05-28T15:22:18,Open
+TKT-007,Digital Dynamics,"API endpoints are timing out consistently during high traffic periods",2023-05-28T16:05:30,Open
+TKT-008,Future Systems,"Need help setting up SSO integration with our corporate Active Directory",2023-05-28T17:12:45,Open
+TKT-009,CloudFirst Ltd,"Your platform is unreliable and causing major disruptions to our business",2023-05-28T18:30:22,Open
+TKT-010,DataDriven Inc,"What are the steps to upgrade our plan and add more user seats?",2023-05-28T19:45:10,Open

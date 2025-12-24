@@ -1,0 +1,36 @@
+# AIOps Platform - Python Dependencies
+
+# Web Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# Slack Integration
+slack_sdk==3.26.1
+
+# AI/ML Libraries
+openai==1.3.7
+anthropic==0.7.7
+
+# Data Processing
+pandas==2.1.3
+numpy==1.25.2
+
+# UI Framework
+streamlit==1.28.2
+plotly==5.17.0
+
+# Utilities
+python-dotenv==1.0.0
+requests==2.31.0
+pydantic==2.5.0
+httpx==0.25.2
+
+# Testing
+pytest==7.4.3
+httpx==0.25.2
+
+# Logging & Monitoring
+loguru==0.7.2
+
+# Database (Optional)
+sqlalchemy==2.0.23
