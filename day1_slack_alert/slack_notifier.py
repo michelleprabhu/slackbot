@@ -22,15 +22,15 @@ if not logger.handlers:
 SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
 MAX_RETRIES = 3
 
-async def send_slack_alert_async(incident_title: str, impact_level: str, details: str):
+async def send_slack_alert_async(incident_title: str, impact_level: str, details: str, system_area: str = "General Planning", impact_value: float = 0):
     """Send formatted alert to Slack channel for EPM incidents"""
     
     if not SLACK_WEBHOOK_URL:
         logger.warning("SLACK_WEBHOOK_URL not configured. Alert not sent.")
         return False
     
-    # EPM specific color mapping
-    color = "#D32F2F" if impact_level.lower() == "critical" else "#FFA000" if impact_level.lower() == "warning" else "#1E88E5"
+    # Format currency
+    formatted_val = f"${impact_value:,.0f}" if impact_value > 0 else "N/A"
 
     message = {
         "blocks": [
@@ -51,7 +51,7 @@ async def send_slack_alert_async(incident_title: str, impact_level: str, details
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f"*System Area:*\n{incident_title.split(':')[0] if ':' in incident_title else 'General Planning'}"
+                        "text": f"*Strategic $VAR:*\n{formatted_val}"
                     }
                 ]
             },
@@ -60,13 +60,20 @@ async def send_slack_alert_async(incident_title: str, impact_level: str, details
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": f"*Incident Details:*\n{details}"
+                        "text": f"*System Area:*\n{system_area}"
                     },
                     {
                         "type": "mrkdwn",
                         "text": f"*Detection Time:*\n{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
                     }
                 ]
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": f"*Incident Details:*\n{details}"
+                }
             },
             {
                 "type": "actions",
@@ -89,7 +96,7 @@ async def send_slack_alert_async(incident_title: str, impact_level: str, details
                             "emoji": True
                         },
                         "style": "danger",
-                        "value": f"rerun_{incident_title.split(':')[0].lower() if ':' in incident_title else 'general'}"
+                        "value": f"rerun_{system_area.lower().replace(' ', '_')}"
                     }
                 ]
             },
@@ -139,7 +146,7 @@ def send_slack_alert(incident_title: str, impact_level: str, details: str):
 if __name__ == "__main__":
     print("Testing EPM Slack notification...")
     result = send_slack_alert(
-        incident_title="Data Integration: Pigment Sync",
+        incident_title="Data Integration: Platform Sync",
         impact_level="Critical",
         details="API timeout during nightly forecast refresh."
     )

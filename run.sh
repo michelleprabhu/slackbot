@@ -29,15 +29,15 @@ usage() {
 case "$1" in
     webhook)
         echo "Starting EPM Webhook Receiver..."
-        ./venv/bin/python day1_slack_alert/webhook_receiver.py
+        python3 day1_slack_alert/webhook_receiver.py
         ;;
     dashboard)
-        echo "Starting Strategic Classifier Dashboard..."
-        ./venv/bin/python -m streamlit run day30_ticket_classifier/app.py
+        echo "Starting Strategic Intelligence Platform..."
+        python3 server.py
         ;;
     tests)
         echo "Running Test Suite..."
-        ./venv/bin/python -m pytest
+        python3 -m pytest
         ;;
     *)
         usage

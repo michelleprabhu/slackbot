@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal</title>
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- React & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const formatUSD = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
+
+        const ContextSelector = () => (
+            <div className="context-bar">
+                <div className="selector-item">
+                    <span className="selector-label">Time</span>
+                    <span className="selector-value">FY25 Q4</span>
+                    <i data-lucide="chevron-down" style={{ width: '14px' }}></i>
+                </div>
+                <div className="selector-item">
+                    <span className="selector-label">Scenario</span>
+                    <span className="selector-value">Actuals + Forecast</span>
+                    <i data-lucide="chevron-down" style={{ width: '14px' }}></i>
+                </div>
+                <div className="selector-item">
+                    <span className="selector-label">Department</span>
+                    <span className="selector-value">Sales Ops</span>
+                    <i data-lucide="chevron-down" style={{ width: '14px' }}></i>
+                </div>
+                <div className="selector-item">
+                    <span className="selector-label">Region</span>
+                    <span className="selector-value">EMEA North</span>
+                    <i data-lucide="chevron-down" style={{ width: '14px' }}></i>
+                </div>
+            </div>
+        );
+
+        const Dashboard = ({ stats, results }) => (
+            <div className="view-animate">
+                <ContextSelector />
+
+                <div className="stats-grid">
+                    <div className="card card-dark">
+                        <div className="card-label">Strategic $VAR</div>
+                        <div className="card-value" style={{ color: '#818cf8' }}>{stats ? formatUSD(stats.total_var) : '$0'}</div>
+                        <div className="card-desc">Total budgetary value currently at risk.</div>
+                    </div>
+                    <div className="card">
+                        <div className="card-label">Q4 Forecast Variance</div>
+                        <div className="card-value" style={{ color: 'var(--success)' }}>
+                            {stats && stats.sales_intelligence ? stats.sales_intelligence.variance_percent : '+0.0%'}
+                        </div>
+                        <div className="card-desc">Variance against Q3 actuals in the current planning cycle.</div>
+                    </div>
+                    <div className="card">
+                        <div className="card-label">Sales Velocity</div>
+                        <div className="card-value">
+                            {stats && stats.sales_intelligence ? stats.sales_intelligence.sales_velocity : 'N/A'}
+                        </div>
+                        <div className="card-desc">Current weekly ingestion rate of revenue signals.</div>
+                    </div>
+                </div>
+
+                {stats && stats.sales_intelligence && (
+                    <div style={{ marginTop: '48px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+                        <div className="card">
+                            <h3 className="section-title"><i data-lucide="trending-up"></i> Sales Performance Board</h3>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '24px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', background: '#f8fafc', borderRadius: '8px' }}>
+                                    <span style={{ fontWeight: 600 }}>Q3 Actual Revenue</span>
+                                    <span style={{ color: 'var(--text-secondary)' }}>{formatUSD(stats.sales_intelligence.q3_revenue)}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', background: '#f8fafc', borderRadius: '8px' }}>
+                                    <span style={{ fontWeight: 600 }}>Q4 Target Forecast</span>
+                                    <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{formatUSD(stats.sales_intelligence.q4_forecast)}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="card">
+                            <h3 className="section-title"><i data-lucide="globe"></i> Regional Insights</h3>
+                            <div style={{ marginTop: '24px' }}>
+                                <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+                                    Top Performing Node: <strong style={{ color: 'var(--text-primary)' }}>{stats.sales_intelligence.top_performing_node}</strong>
+                                </p>
+                                <div style={{ height: '8px', width: '100%', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
+                                    <div style={{ height: '100%', width: '82%', background: 'var(--accent)', borderRadius: '4px' }}></div>
+                                </div>
+                                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '8px' }}>
+                                    Quota Attainment: <strong>82%</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {results && results.length > 0 && (
+                    <div style={{ marginTop: '64px' }}>
+                        <h2 className="section-title">
+                            <i data-lucide="list"></i> Active Processing Queue
+                        </h2>
+                        <div className="data-surface">
+                            <table className="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Entity</th>
+                                        <th>Category</th>
+                                        <th>Urgency</th>
+                                        <th>Impact ($)</th>
+                                        <th>Synthesis</th>
+                                        <th style={{ textAlign: 'right' }}>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {results.map((res, i) => (
+                                        <tr key={i}>
+                                            <td style={{ fontWeight: 600 }}>{res.ticket_id}</td>
+                                            <td>{res.customer}</td>
+                                            <td>{res.ai_category}</td>
+                                            <td>
+                                                <span className={`badge badge-${res.ai_urgency.toLowerCase()}`}>
+                                                    {res.ai_urgency}
+                                                </span>
+                                            </td>
+                                            <td style={{ fontWeight: 700 }}>{formatUSD(res.ai_impact_score)}</td>
+                                            <td style={{ color: 'var(--text-secondary)' }}>{res.ai_summary}</td>
+                                            <td style={{ textAlign: 'right' }}>
+                                                <button
+                                                    className="btn-primary"
+                                                    style={{ padding: '8px 16px', fontSize: '0.75rem', background: 'var(--accent-soft)', color: 'var(--accent)', border: '1px solid var(--accent)' }}
+                                                    onClick={async () => {
+                                                        try {
+                                                            await axios.post('/api/dispatch-slack', res);
+                                                            alert('Signal dispatched to Slack');
+                                                        } catch (e) {
+                                                            alert('Failed to dispatch');
+                                                        }
+                                                    }}
+                                                >
+                                                    Dispatch
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+
+        const Ingestion = ({ onProcess }) => {
+            const [file, setFile] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const fileInputRef = React.useRef(null);
+
+            const handleUpload = async () => {
+                if (!file) return;
+                setLoading(true);
+                const formData = new FormData();
+                formData.append('file', file);
+                try {
+                    const res = await axios.post('/api/classify', formData);
+                    onProcess(res.data);
+                } catch (err) {
+                    alert('Error processing file');
+                }
+                setLoading(false);
+            };
+
+            return (
+                <div className="view-animate">
+                    <div className="ingestion-dropzone" onClick={() => fileInputRef.current.click()}>
+                        <i data-lucide="upload-cloud" style={{ width: '64px', height: '64px', color: 'var(--accent)', marginBottom: '24px' }}></i>
+                        <h2 style={{ marginBottom: '12px' }}>Data Ingestion Hub</h2>
+                        <p className="page-subtitle" style={{ marginBottom: '32px' }}>Select or drop a CSV document to synthesize organizational planning signals.</p>
+
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".csv"
+                            onChange={(e) => setFile(e.target.files[0])}
+                            style={{ display: 'none' }}
+                        />
+
+                        {file && (
+                            <div style={{ marginBottom: '24px', fontWeight: 600, color: 'var(--accent)' }}>
+                                Selected: {file.name}
+                            </div>
+                        )}
+
+                        <button
+                            className="btn-primary"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (!file) fileInputRef.current.click();
+                                else handleUpload();
+                            }}
+                            disabled={loading}
+                        >
+                            {loading ? 'Synthesizing...' : (file ? 'Start Classification Engine' : 'Select Data File')}
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const System = () => {
+            const [config, setConfig] = useState(null);
+
+            const fetchConfig = async () => {
+                const res = await axios.get('/api/config');
+                setConfig(res.data);
+            };
+
+            const toggleSlack = async (e) => {
+                await axios.post(`/api/config/slack?enabled=${e.target.checked}`);
+                fetchConfig();
+            };
+
+            const testSlack = async () => {
+                const res = await axios.post('/api/test-slack');
+                if (res.data.status === 'success') alert('Success');
+                else alert('Error');
+            };
+
+            useEffect(() => { fetchConfig(); }, []);
+
+            if (!config) return null;
+
+            return (
+                <div className="view-animate">
+                    <div className="config-grid">
+                        <div className="card">
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+                                <div>
+                                    <h3 style={{ marginBottom: '8px' }}>Slack Integration</h3>
+                                    <p className="card-desc">Dispatch critical alerts via configured webhooks.</p>
+                                </div>
+                                <label className="switch">
+                                    <input
+                                        type="checkbox"
+                                        checked={config.slack_enabled}
+                                        onChange={toggleSlack}
+                                    />
+                                    <span className="slider"></span>
+                                </label>
+                            </div>
+                            <hr style={{ margin: '32px 0', border: 'none', borderTop: '1px solid var(--border)' }} />
+                            <button className="btn-primary" style={{ width: '100%', background: '#f1f5f9', color: '#0f172a' }} onClick={testSlack}>
+                                Run Connectivity Test
+                            </button>
+                        </div>
+
+                        <div className="card">
+                            <h3 style={{ marginBottom: '24px' }}>Engine Status</h3>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <span className="card-label">Operational Uptime</span>
+                                    <span style={{ fontWeight: 700, color: '#16a34a' }}>{config.uptime}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <span className="card-label">Last Synchronized</span>
+                                    <span style={{ fontWeight: 600 }}>{config.last_sync}</span>
+                                </div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <span className="card-label">Environment</span>
+                                    <span style={{ fontWeight: 600 }}>Production</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [view, setView] = useState('dashboard');
+            const [data, setData] = useState({ results: null, stats: null });
+
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [view]);
+
+            return (
+                <React.Fragment>
+                    <aside className="sidebar">
+                        <div className="logo-container">
+                            <div style={{ width: '32px', height: '32px', background: 'var(--accent)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <i data-lucide="activity" style={{ color: '#fff', width: '20px' }}></i>
+                            </div>
+                            <div className="logo-text">ERD</div>
+                        </div>
+                        <nav className="nav-menu">
+                            <a className={`nav-item ${view === 'dashboard' ? 'active' : ''}`} onClick={() => setView('dashboard')}>
+                                <i data-lucide="layout-grid"></i> Dashboard
+                            </a>
+                            <a className={`nav-item ${view === 'ingestion' ? 'active' : ''}`} onClick={() => setView('ingestion')}>
+                                <i data-lucide="database"></i> Ingestion
+                            </a>
+                            <a className={`nav-item ${view === 'system' ? 'active' : ''}`} onClick={() => setView('system')}>
+                                <i data-lucide="cpu"></i> System
+                            </a>
+                        </nav>
+                        <div style={{ padding: '32px', borderTop: '1px solid rgba(255,255,255,0.05)', marginTop: 'auto' }}>
+                            <p style={{ fontSize: '0.75rem', color: 'var(--sidebar-text)' }}>Release v4.2.5</p>
+                        </div>
+                    </aside>
+                    <main className="main-wrapper">
+                        <header className="page-header">
+                            <h1>{view.charAt(0).toUpperCase() + view.slice(1)} Board</h1>
+                            <p className="page-subtitle">ERD | Strategic Intelligence Command Center</p>
+                        </header>
+
+                        {view === 'dashboard' && <Dashboard {...data} />}
+                        {view === 'ingestion' && <Ingestion onProcess={setData} />}
+                        {view === 'system' && <System />}
+                    </main>
+                </React.Fragment>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

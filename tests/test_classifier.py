@@ -87,7 +87,7 @@ def mock_ai_classification(issue_description):
     
     issue_lower = issue_description.lower()
     
-    if any(word in issue_lower for word in ['sync', 'integration', 'api', 'connector', 'pigment', 'workday', 'data']):
+    if any(word in issue_lower for word in ['sync', 'integration', 'api', 'connector', 'platform', 'workday', 'data']):
         category = "Data Integration"
         urgency = "High" if any(word in issue_lower for word in ['failed', 'stopped', 'stuck', 'error']) else "Medium"
         impact = "Nightly data refresh failed, impacting accuracy of real-time forecasts."
@@ -246,7 +246,7 @@ def validate_ticket_data(df):
 def test_mock_ai_classification():
     """Test EPM-specific mock AI responses"""
     # Test Data Integration
-    res = mock_ai_classification("Data sync failed in Pigment")
+    res = mock_ai_classification("Data sync failed in System")
     assert res["category"] == "Data Integration"
     assert res["urgency"] == "High"
     
